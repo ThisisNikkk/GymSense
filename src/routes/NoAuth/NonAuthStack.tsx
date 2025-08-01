@@ -13,8 +13,7 @@ export default function NonAuthStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name={AppRoutes.Home} component={Home} />
       <Stack.Screen name={AppRoutes.Avatar} component={Avatar}/>
-      <Stack.Screen name={AppRoutes.WelcomeApp} component={WelcomeApp}/>
-      <Stack.Screen name={AppRoutes.AppHome} component={AppHome}/> 
+      <Stack.Screen name={AppRoutes.WelcomeApp} component={WelcomeApp}/> 
       <Stack.Screen name={AppRoutes.Tabs} component={Tabs}/>
 
     </Stack.Navigator>

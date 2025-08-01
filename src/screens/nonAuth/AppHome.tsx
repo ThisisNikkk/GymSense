@@ -16,13 +16,17 @@ interface HomeProps {
 const AppHome: React.FC<HomeProps> = ({navigation}) => {
 
     const dispatch = useDispatch();
-    
+
     return(
-        <View style={{flex:1, justifyContent:'center',alignItems:'center'}}>
+      <SafeAreaProvider>
+        <SafeAreaView edges={['top']} style={{flex:1, justifyContent:'center',alignItems:'center'}}>
           <Text style={{fontSize:28,fontFamily:'Poppins-Medium'}}
             onPress={() => dispatch(setAuth(false))}
-          >Hello World!</Text>
-        </View>
+          >
+            Hello World!
+          </Text>
+        </SafeAreaView>
+      </SafeAreaProvider>  
     );
 }
 

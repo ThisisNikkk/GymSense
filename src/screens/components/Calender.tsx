@@ -25,7 +25,6 @@ const CalendarComponent = () => {
 
   return (
     <View style={styles.headerContainer}>
-      {/* Touchable Header */}
       <TouchableOpacity
         style={styles.calendarButton}
         onPress={() => setModalVisible(true)}
@@ -44,13 +43,8 @@ const CalendarComponent = () => {
       </TouchableOpacity>
       <View style={{ flexDirection: 'row' }}>
         <Pressable>
-          <Image source={require('../../assets/icons/Scale.png')} style={{ height: 30, width: 30, resizeMode: "contain", }} />
+          <Image source={require('../../assets/icons/Share.png')} style={{ height: 30, width: 30, resizeMode: "contain", }} />
         </Pressable>
-        <Pressable style={{ marginHorizontal: 20 }}>
-          <Image source={require('../../assets/icons/Camera.png')} style={{ height: 30, width: 30, resizeMode: "contain", }} />
-        </Pressable>
-
-
       </View>
 
 
@@ -97,8 +91,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 20,
+    paddingHorizontal:20,
+    paddingVertical: 50,
     backgroundColor: '#fff',
   },
   calendarButton: {
@@ -113,9 +107,14 @@ const styles = StyleSheet.create({
     tintColor: 'black',
   },
   dateText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#000',
+    fontSize: 17,
+    fontFamily:'Poppins-Regular',
+    fontWeight: '400',
+    color: 'rgba(5,5,5,1)',
+    lineHeight:24,
+    textAlign:'center',
+    textAlignVertical:'center',
+    left:20,
   },
   modalOverlay: {
     flex: 1,

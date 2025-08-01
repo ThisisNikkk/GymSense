@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import AppHome from '../screens/nonAuth/AppHome';
 import { StyleSheet, Text, View, Image, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import CalendarComponent from '../screens/components/Calender';
 
 const Tab = createBottomTabNavigator();
 const { width } = Dimensions.get('window');
@@ -25,7 +26,7 @@ const Tabs = () => {
     >
       <Tab.Screen name='AppHome' component={AppHome}
         options={{
-          headerShown:false,
+          header:() => <CalendarComponent/>,
           tabBarIcon: ({ focused }) => (
             <View style={styles.tabItem}>
               <Image
