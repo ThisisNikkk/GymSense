@@ -16,15 +16,16 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AppRoutes from "../../routes/RouteKeys/appRoutes";
 
 // Image imports
-const bg = require('../../assets/avatarbg.png');
-const male = require('../../assets/male.png');
-const female = require('../../assets/female.png');
+
 
 interface HomeProps {
   navigation: any;
 }
 
 const Avatar: React.FC<HomeProps> = ({ navigation }) => {
+  const bg = require('../../assets/avatarbg.png');
+  const male = require('../../assets/male.png');
+  const female = require('../../assets/female.png');
   const route = useRoute();
   const { name } = route.params as { name: string };
   console.log(name)
@@ -97,7 +98,6 @@ const Avatar: React.FC<HomeProps> = ({ navigation }) => {
                   avatar: selectedImage
                 });
               }}
-
             >
               <Text style={styles.buttonText}>Configure Avatar</Text>
             </TouchableOpacity>

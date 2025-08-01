@@ -12,12 +12,12 @@ import { Calendar } from 'react-native-calendars';
 
 const CalendarComponent = () => {
   const [modalVisible, setModalVisible] = useState(false);
-const [selectedDate, setSelectedDate] = useState(
-  new Date().toISOString().split('T')[0]
-);
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split('T')[0]
+  );
 
 
-  const handleDayPress = (day:any) => {
+  const handleDayPress = (day: any) => {
     setSelectedDate(day.dateString);
     setModalVisible(false);
     console.log('Selected date:', day.dateString);
@@ -31,7 +31,7 @@ const [selectedDate, setSelectedDate] = useState(
         onPress={() => setModalVisible(true)}
       >
         <Image
-          source={require('../../assets/calendar.png')}
+          source={require('../../assets/icons/Calendar.png')}
           style={styles.icon}
         />
         <Text style={styles.dateText}>
@@ -42,18 +42,18 @@ const [selectedDate, setSelectedDate] = useState(
           })}
         </Text>
       </TouchableOpacity>
-      <View style={{flexDirection:'row'}}>
-         <Pressable>
-        <Image source={require('../../assets/Scale.png')} style={{height:30,width:30,resizeMode:"contain",}}/>
-      </Pressable>
-      <Pressable style={{marginHorizontal:20}}>
-        <Image source={require('../../assets/Camera.png')} style={{height:30,width:30,resizeMode:"contain",}}/>
-      </Pressable>
+      <View style={{ flexDirection: 'row' }}>
+        <Pressable>
+          <Image source={require('../../assets/icons/Scale.png')} style={{ height: 30, width: 30, resizeMode: "contain", }} />
+        </Pressable>
+        <Pressable style={{ marginHorizontal: 20 }}>
+          <Image source={require('../../assets/icons/Camera.png')} style={{ height: 30, width: 30, resizeMode: "contain", }} />
+        </Pressable>
 
 
       </View>
 
-     
+
 
       {/* Modal Calendar */}
       <Modal
@@ -94,7 +94,7 @@ const [selectedDate, setSelectedDate] = useState(
 export default CalendarComponent;
 const styles = StyleSheet.create({
   headerContainer: {
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
@@ -129,13 +129,13 @@ const styles = StyleSheet.create({
     padding: 16,
     elevation: 5,
     width: '90%',
-    alignSelf:'center',
+    alignSelf: 'center',
   },
   closeButton: {
     marginTop: 10,
     alignSelf: 'flex-end',
     padding: 8,
     backgroundColor: '#000',
-    borderRadius: 8,
-  },
+    borderRadius: 8,
+  },
 });

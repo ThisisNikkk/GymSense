@@ -3,6 +3,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "../../screens/nonAuth/Home";
 import Avatar from "../../screens/nonAuth/Avatar"
 import WelcomeApp from "../../screens/nonAuth/WelcomeApp";
+import AppHome from "../../screens/nonAuth/AppHome";
+import Tabs from "../../navigation/Tab";
 import AppRoutes from "../RouteKeys/appRoutes";
 
 export default function NonAuthStack() {
@@ -12,6 +14,9 @@ export default function NonAuthStack() {
       <Stack.Screen name={AppRoutes.Home} component={Home} />
       <Stack.Screen name={AppRoutes.Avatar} component={Avatar}/>
       <Stack.Screen name={AppRoutes.WelcomeApp} component={WelcomeApp}/>
+      <Stack.Screen name={AppRoutes.AppHome} component={AppHome}/> 
+      <Stack.Screen name={AppRoutes.Tabs} component={Tabs}/>
+
     </Stack.Navigator>
   );
 }

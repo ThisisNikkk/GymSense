@@ -15,16 +15,15 @@ import { setAuth } from "../../redux/Reducers/userData";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AppRoutes from "../../routes/RouteKeys/appRoutes";
 
-// Image imports
-const bg = require('../../assets/avatarbg.png');
-const male = require('../../assets/male.png');
-const female = require('../../assets/female.png');
 
 interface HomeProps {
   navigation: any;
 }
 
 const WelcomeApp: React.FC<HomeProps> = ({ navigation }) => {
+  const bg = require('../../assets/avatarbg.png');
+  const male = require('../../assets/male.png');
+  const female = require('../../assets/female.png');
   const route = useRoute();
   const { name, avatar } = route.params as { name: string, avatar: any };
   console.log(name)
@@ -54,9 +53,9 @@ const WelcomeApp: React.FC<HomeProps> = ({ navigation }) => {
         </View>
 
         <View style={styles.whiteContainer}>
-          <View style={{marginVertical: 32 , alignItems:'center'}}>
+          <View style={{ marginVertical: 32, alignItems: 'center' }}>
             <Text style={styles.avatarText}>Welcome to {'\n'}
-                GymSense,{name}
+              GymSense,{name}
             </Text>
             <Text style={styles.avText}>
               Start your fitness journey with us! Celebrate{'\n'}
@@ -66,6 +65,7 @@ const WelcomeApp: React.FC<HomeProps> = ({ navigation }) => {
 
             <TouchableOpacity
               style={[styles.button, { backgroundColor: '#242528' }]}
+              onPress={()=> navigation.navigate(AppRoutes.Tabs)}
             >
               <Text style={styles.buttonText}>Continue to App</Text>
             </TouchableOpacity>
@@ -108,13 +108,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     borderRadius: 16,
     elevation: 5,
-    paddingVertical:20,
+    paddingVertical: 20,
   },
   avatarText: {
     fontFamily: "Poppins-Regular",
     fontSize: 30,
     lineHeight: 32,
-    textAlign:'center'
+    textAlign: 'center'
   },
   avText: {
     fontFamily: 'Poppins-Light',
