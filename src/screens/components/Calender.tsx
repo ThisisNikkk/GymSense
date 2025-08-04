@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal:20,
-    paddingVertical: 50,
+    paddingVertical: 54,
     backgroundColor: '#fff',
   },
   calendarButton: {
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     lineHeight:24,
     textAlign:'center',
     textAlignVertical:'center',
-    left:20,
+    left:16,
   },
   modalOverlay: {
     flex: 1,
