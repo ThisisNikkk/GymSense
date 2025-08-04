@@ -14,8 +14,14 @@ import { useDispatch } from "react-redux";
 import { setAuth } from "../../redux/Reducers/userData";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { BlurView } from "@react-native-community/blur";
+import AppRoutes from "../../routes/RouteKeys/appRoutes";
 
-const AppHome: React.FC = () => {
+
+interface HomeProps {
+  navigation: any;
+}
+
+const AppHome: React.FC<HomeProps> = ({navigation}) => {
   const agenda = require("../../assets/icons/Agenda.png");
   const add = require("../../assets/icons/Add.png");
   const addd = require("../../assets/icons/Addd.png");
@@ -90,7 +96,13 @@ const AppHome: React.FC = () => {
               </Pressable>
               <Text style={styles.modalText}>Empty Gymdeck</Text>
               <Text style={styles.modalSubText}>Create your first template to organize{'\n'} your workouts!</Text>
-              <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
+              <TouchableOpacity onPress={()=> {
+                closeModal()
+                setTimeout(() => {
+                  navigation.navigate(AppRoutes.GymDeck)
+                }, 1000);
+
+              }} style={styles.closeButton}>
                 <Image source={addd} style={styles.btnImg} />
                 <Text style={styles.btnText}>Create{"\n"} Gymdeck</Text>
               </TouchableOpacity>
