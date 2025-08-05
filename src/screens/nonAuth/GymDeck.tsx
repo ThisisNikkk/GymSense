@@ -10,7 +10,6 @@ import {
   Image,
 } from 'react-native';
 
-// --- IMPORT YOUR LOCAL IMAGE ASSETS ---
 const img1 = require('../../assets/icons/1.png');
 const img2 = require('../../assets/icons/2.png');
 const img3 = require('../../assets/icons/3.png');
@@ -22,7 +21,6 @@ const img8 = require('../../assets/icons/8.png');
 const dumbbell = require('../../assets/icons/Dumbell.png');
 const search = require('../../assets/icons/Search.png');
 
-// --- MOCK DATA FOR THE APP ---
 const EXERCISES_DATA = [
   { id: '1', name: 'Upright Row', icon: img1 },
   { id: '2', name: 'Reverse Wrist Curl', icon: img2 },
@@ -54,52 +52,56 @@ interface GymDeckProps {
 }
 
 const GymDeck: FC<GymDeckProps> = ({ navigation }) => {
-  // State to manage the exercises and their selection status.
   const [exercises, setExercises] = useState(
     EXERCISES_DATA.map(item => ({ ...item, isSelected: false }))
   );
-  // State to manage the current page number for the pagination component.
-  const [currentPage, setCurrentPage] = useState(48);
-  const totalPages = 93;
+  const [currentPage, setCurrentPage] = useState(0);
 
-  // Function to toggle the selection state of an exercise card.
   const handleSelectExercise = (id: string) => {
-    setExercises(prevExercises =>
-      prevExercises.map(exercise =>
+    setExercises(prevExercises => {
+      const newExercises = prevExercises.map(exercise =>
         exercise.id === id
           ? { ...exercise, isSelected: !exercise.isSelected }
           : exercise
-      )
-    );
+      );
+
+      const toggledExercise = newExercises.find(ex => ex.id === id);
+      const wasSelected = toggledExercise?.isSelected;
+      const selectedCount = newExercises.filter(ex => ex.isSelected).length;
+      const newTotalPages = Math.max(1, Math.ceil(selectedCount / 8));
+
+      if (wasSelected) {
+
+        const newPage = Math.floor((selectedCount - 1) / 8);
+        setCurrentPage(newPage);
+      } else {
+        if (currentPage >= newTotalPages) {
+          setCurrentPage(Math.max(0, newTotalPages - 1));
+        }
+      }
+
+      return newExercises;
+    });
   };
 
-  // --- RENDER FUNCTIONS ---
-
-  // Combines the top navigation and the filter bar into a single component.
   const renderHeaderAndFilters = () => (
     <View>
-      {/* Top Navigation Bar */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => console.log('Cancel pressed')}>
-          <Text style={styles.headerButtonText} onPress={() => navigation.goBack()}>Cancel</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.headerButtonText}>Cancel</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Select Exercises</Text>
         <TouchableOpacity onPress={() => console.log('Next pressed')}>
           <Text style={[styles.headerButtonText, styles.nextButtonText]}>Next</Text>
         </TouchableOpacity>
       </View>
-
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
         <TouchableOpacity style={styles.searchBar}>
           <Image source={search} style={styles.searchIcon} resizeMode="contain" />
         </TouchableOpacity>
         {FILTER_ICONS.slice(1).map(filter => (
           <TouchableOpacity key={filter.id} style={styles.filterButton}>
-            {typeof filter.icon === 'number' ? (
-              <Image source={filter.icon} style={styles.filterImage} resizeMode="contain" />
-            ) : (
-              <Text style={styles.filterIconText}>{filter.icon}</Text>
-            )}
+            <Image source={filter.icon} style={styles.filterImage} resizeMode="contain" />
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -115,76 +117,64 @@ const GymDeck: FC<GymDeckProps> = ({ navigation }) => {
         style={cardStyle}
         onPress={() => handleSelectExercise(item.id)}
       >
-        {typeof item.icon === 'number' ? (
-          <Image source={item.icon} style={styles.cardImage} resizeMode="contain" />
-        ) : (
-          <Text style={styles.cardIconText}>{item.icon}</Text>
-        )}
+        <Image source={item.icon} style={styles.cardImage} resizeMode="contain" />
         <Text style={[styles.cardText, { color: textColor }]}>{item.name}</Text>
       </TouchableOpacity>
     );
   };
 
   const renderPagination = () => {
-    const selectedExercises = exercises.filter(e => e.isSelected);
-    const totalSlots = 8;
-    const paginationGridData = selectedExercises
-      .concat(Array(Math.max(0, totalSlots - selectedExercises.length)).fill(null));
+    const selectedExercises = exercises.filter(ex => ex.isSelected);
+    const totalSelectedCount = selectedExercises.length;
+    const totalPages = Math.max(1, Math.ceil(totalSelectedCount / 8));
 
-    const renderDotsRow = () => (
-      <View style={styles.dotsRow}>
-        {[...Array(4)].map((_, index) => (
-          <View key={`dot-${index}`} style={styles.dot} />
-        ))}
-      </View>
-    );
+    const exercisesForPage = selectedExercises.slice(currentPage * 8, (currentPage + 1) * 8);
 
-    const renderGridItem = ({ item }: { item: any }) => {
-      if (item) {
+    const renderDotsRow = (startIndex: number) => {
+      const dotsInRow = 4;
+      return Array.from({ length: dotsInRow }, (_, index) => {
+        const absoluteIndex = startIndex + index;
+        const selectedIcon = exercisesForPage[absoluteIndex] ? exercisesForPage[absoluteIndex].icon : null;
+
         return (
-          <View style={styles.selectedIconWrapper}>
-            {typeof item.icon === 'number' ? (
-              <Image source={item.icon} style={styles.selectedIconImage} resizeMode="contain" />
+          <View key={absoluteIndex} style={[styles.paginationItem, selectedIcon && styles.paginationItemSelected]}>
+            {selectedIcon ? (
+              <Image source={selectedIcon} style={styles.paginationDotImage} />
             ) : (
-              <Text style={styles.selectedIconText}>{item.icon}</Text>
+              <View style={styles.paginationDot} />
             )}
           </View>
         );
-      }
-      return null;
+      });
     };
+
+    const leftArrowActive = currentPage > 0;
+    const rightArrowActive = currentPage < totalPages - 1;
 
     return (
       <View style={styles.paginationContainer}>
-        <TouchableOpacity onPress={() => setCurrentPage(Math.max(1, currentPage - 1))}>
-          <Text style={styles.paginationIcon}>{'<'}</Text>
+        <TouchableOpacity
+          onPress={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+          disabled={!leftArrowActive}
+        >
+          <Text style={[styles.paginationArrow, leftArrowActive && styles.paginationArrowActive]}>{'<'}</Text>
         </TouchableOpacity>
 
-        <View style={styles.paginationCenterContainer}>
-          <FlatList
-            data={paginationGridData}
-            renderItem={renderGridItem}
-            keyExtractor={(item, index) => item?.id || `dot-${index}`}
-            numColumns={4}
-            contentContainerStyle={styles.paginationGrid}
-            scrollEnabled={false} 
-          />
-          {selectedExercises.length === 0 && (
-            <View style={styles.dotsOverlay}>
-              {renderDotsRow()}
-              {renderDotsRow()}
-            </View>
-          )}
+        <View style={styles.paginationGrid}>
+          <View style={styles.paginationRow}>{renderDotsRow(0)}</View>
+          <View style={styles.paginationRow}>{renderDotsRow(4)}</View>
         </View>
 
-        <TouchableOpacity onPress={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}>
-          <Text style={styles.paginationIcon}>{'>'}</Text>
+        <TouchableOpacity
+          onPress={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+          disabled={!rightArrowActive}
+        >
+          <Text style={[styles.paginationArrow, rightArrowActive && styles.paginationArrowActive]}>{'>'}</Text>
         </TouchableOpacity>
       </View>
     );
   };
 
-  // --- MAIN RENDER LOGIC ---
   return (
     <SafeAreaView style={styles.container}>
       {renderHeaderAndFilters()}
@@ -194,13 +184,13 @@ const GymDeck: FC<GymDeckProps> = ({ navigation }) => {
         keyExtractor={item => item.id}
         numColumns={2}
         contentContainerStyle={styles.listContainer}
+        columnWrapperStyle={styles.row}
       />
       {renderPagination()}
     </SafeAreaView>
   );
 };
 
-// --- STYLESHEET ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -213,6 +203,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 50,
     backgroundColor: '#fff',
+    overflow: 'hidden',
   },
   headerButtonText: {
     fontFamily: 'Poppins-Medium',
@@ -235,6 +226,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: '#eee',
     flexDirection: 'row',
+    overflow: 'hidden',
   },
   searchBar: {
     width: 48,
@@ -267,6 +259,9 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: 8,
+  },
+  row: {
+    justifyContent: 'space-between',
   },
   card: {
     flex: 1,
@@ -310,59 +305,52 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingVertical: 50,
     backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    paddingVertical: 18,
-  },
-  paginationCenterContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 10,
+    borderTopRightRadius: 24,
+    borderTopLeftRadius: 24,
+    borderWidth: 1,
   },
   paginationGrid: {
-    height: 170,
-    justifyContent: 'center',
+    alignItems: 'center',
   },
-  selectedIconWrapper: {
-    width: 60,
-    height: 60,
+  paginationRow: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  paginationArrow: {
+    fontSize: 24,
+    color: '#D1D5DB',
+    paddingHorizontal: 10,
+  },
+  paginationArrowActive: {
+    color: '#4A4B4F',
+  },
+  paginationItem: {
+    width: 56,
+    height: 56,
+    marginHorizontal: 10,
+    marginVertical: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  paginationItemSelected: {
+    backgroundColor: '#F0FFF9',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#B5FFD6',
-    backgroundColor: '#F0FFF9',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 4,
+    marginHorizontal: 10,
+    marginVertical: 5,
   },
-  selectedIconImage: {
-    width: 32,
-    height: 32,
-  },
-  selectedIconText: {
-    fontSize: 32,
-  },
-  paginationIcon: {
-    fontSize: 30,
-    color: '#050505',
-  },
-  dot: {
+  paginationDot: {
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: '#E6E6E6',
-    margin: 4,
+    backgroundColor: '#EFEFEF',
   },
-  dotsOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  dotsRow: {
-    flexDirection: 'row',
-    justifyContent:'space-around'
+  paginationDotImage: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
   },
 });
 

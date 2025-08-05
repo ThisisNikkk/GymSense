@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
   TextContainer: {
     flex: 1,
     justifyContent: "center",
+    top:50,
   },
   agendaImgView: {
     height: 64,
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     paddingVertical: 16,
     paddingHorizontal: 16,
-    marginVertical: 15,
+    marginVertical: 12,
   },
   agendaImg: {
     height: 32,
@@ -146,7 +147,7 @@ const styles = StyleSheet.create({
     lineHeight: 35,
     fontWeight: "400",
     textAlign: "center",
-    marginVertical: 10,
+    marginVertical: 12,
   },
   textSubtext: {
     fontFamily: "Poppins-Light",
