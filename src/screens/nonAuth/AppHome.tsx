@@ -11,6 +11,8 @@ import {
   Pressable,
   FlatList,
   TextInput,
+  KeyboardAvoidingView,
+  Platform
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { setAuth } from "../../redux/Reducers/userData";
@@ -32,7 +34,10 @@ const AppHome: React.FC<HomeProps> = ({ navigation }) => {
   const dispatch = useDispatch();
   const [isGymdeckModalVisible, setIsGymdeckModalVisible] = useState(false);
   const [isBlankPlanModalVisible, setIsBlankPlanModalVisible] = useState(false);
+  const [isExerciseInputModalVisible, setIsExerciseInputModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedExerciseName, setSelectedExerciseName] = useState('');
+  const [exerciseSets, setExerciseSets] = useState([{ weight: '', reps: '' }]);
 
   const exercises = [
     "Upright Row",
@@ -59,11 +64,53 @@ const AppHome: React.FC<HomeProps> = ({ navigation }) => {
   const openBlankPlanModal = () => setIsBlankPlanModalVisible(true);
   const closeBlankPlanModal = () => setIsBlankPlanModalVisible(false);
 
+  const openExerciseInputModal = (exerciseName: string) => {
+    setSelectedExerciseName(exerciseName);
+    setExerciseSets([{ weight: '', reps: '' }]);
+    setIsBlankPlanModalVisible(false);
+    setIsExerciseInputModalVisible(true);
+  };
+
+  const closeExerciseInputModal = () => setIsExerciseInputModalVisible(false);
+
+  const handleWeightChange = (text: string, index: number) => {
+    const newSets = [...exerciseSets];
+    newSets[index].weight = text;
+    setExerciseSets(newSets);
+  };
+
+  const handleRepsChange = (text: string, index: number) => {
+    const newSets = [...exerciseSets];
+    newSets[index].reps = text;
+    setExerciseSets(newSets);
+  };
+
+  const addSetField = () => {
+    setExerciseSets([...exerciseSets, { weight: '', reps: '' }]);
+  };
+
+  const saveExerciseData = () => {
+  const dataToPass = {
+    exerciseName: selectedExerciseName,
+    sets: exerciseSets,
+  };
+  console.log('Saving exercise data:', dataToPass);
+  navigation.navigate(AppRoutes.MainTab, {
+    screen: 'MainHome', 
+    params: { exerciseData: dataToPass },
+  });
+  closeExerciseInputModal();
+};
+
   return (
     <SafeAreaProvider>
       <SafeAreaView edges={["top"]} style={styles.parent}>
-        <StatusBar animated={true} backgroundColor="white" barStyle="dark-content" hidden={false} />
-
+        <StatusBar
+          animated={true}
+          backgroundColor="white"
+          barStyle="dark-content"
+          hidden={false}
+        />
         {isGymdeckModalVisible && (
           <BlurView
             style={StyleSheet.absoluteFill}
@@ -72,8 +119,15 @@ const AppHome: React.FC<HomeProps> = ({ navigation }) => {
             reducedTransparencyFallbackColor="white"
           />
         )}
-
         {isBlankPlanModalVisible && (
+          <BlurView
+            style={StyleSheet.absoluteFill}
+            blurType="light"
+            blurAmount={10}
+            reducedTransparencyFallbackColor="white"
+          />
+        )}
+        {isExerciseInputModalVisible && (
           <BlurView
             style={StyleSheet.absoluteFill}
             blurType="light"
@@ -128,18 +182,13 @@ const AppHome: React.FC<HomeProps> = ({ navigation }) => {
                 <Image source={folder} style={styles.modalImg} />
               </Pressable>
               <Text style={styles.modalText}>Empty Gymdeck</Text>
-              <Text style={styles.modalSubText}>
-                Create your first template to organize{'\n'} your workouts!
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  closeGymdeckModal();
-                  setTimeout(() => {
-                    navigation.navigate(AppRoutes.GymDeck);
-                  }, 1000);
-                }}
-                style={styles.closeButton}
-              >
+              <Text style={styles.modalSubText}>Create your first template to organize{'\n'} your workouts!</Text>
+              <TouchableOpacity onPress={() => {
+                closeGymdeckModal()
+                setTimeout(() => {
+                  navigation.navigate(AppRoutes.GymDeck)
+                }, 1000);
+              }} style={styles.closeButton}>
                 <View style={{ alignItems: 'center', justifyContent: 'space-between', flex: 1 }}>
                   <Image source={addd} style={styles.btnImg} />
                   <Text style={styles.btnText}>Create{"\n"} Gymdeck</Text>
@@ -175,7 +224,7 @@ const AppHome: React.FC<HomeProps> = ({ navigation }) => {
                 data={filteredExercises}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
-                  <TouchableOpacity style={styles.exerciseItem} onPress={closeBlankPlanModal}>
+                  <TouchableOpacity style={styles.exerciseItem} onPress={() => openExerciseInputModal(item)}>
                     <View>
                       <Text style={styles.exerciseText}>{item}</Text>
                     </View>
@@ -188,6 +237,58 @@ const AppHome: React.FC<HomeProps> = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
+        </Modal>
+
+        <Modal
+          visible={isExerciseInputModalVisible}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={closeExerciseInputModal}
+        >
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.modalContainer}
+          >
+            <BlurView
+              style={StyleSheet.absoluteFill}
+              blurType='light'
+              blurAmount={3}
+              reducedTransparencyFallbackColor="white"
+            />
+            <View style={styles.exerciseInputModalContent}>
+              <Text style={styles.exerciseInputModalHeading}>{selectedExerciseName}</Text>
+
+              {exerciseSets.map((set, index) => (
+                <View key={index} style={styles.inputRow}>
+                  <TextInput
+                    style={styles.weightInput}
+                    placeholder=""
+                    placeholderTextColor="#888"
+                    keyboardType="numeric"
+                    value={set.weight}
+                    onChangeText={(text) => handleWeightChange(text, index)}
+                  />
+                  <TextInput
+                    style={styles.repsInput}
+                    placeholder=""
+                    placeholderTextColor="#888"
+                    keyboardType="numeric"
+                    value={set.reps}
+                    onChangeText={(text) => handleRepsChange(text, index)}
+                  />
+                </View>
+              ))}
+
+              <View style={styles.actionButtonsContainer}>
+                <TouchableOpacity style={styles.addSetButton} onPress={addSetField}>
+                  <Text style={styles.addSetButtonText}>+</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.saveButton} onPress={saveExerciseData}>
+                  <Text style={styles.saveButtonText}>✓</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </KeyboardAvoidingView>
         </Modal>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -310,8 +411,10 @@ const styles = StyleSheet.create({
     marginVertical: 18,
   },
   closeButtonText: {
-    fontFamily:'Poppins-Medium',
-    color: "#000",
+    fontFamily: 'Poppins-Medium',
+    fontSize: 14,
+    lineHeight: 24,
+    color: "white",
   },
   modalSubText: {
     fontFamily: "Poppins-Light",
@@ -322,17 +425,17 @@ const styles = StyleSheet.create({
   blankPlanModalContent: {
     width: "100%",
     height: "100%",
-    paddingHorizontal:10,
+    paddingHorizontal: 10,
     backgroundColor: "white",
     borderRadius: 16,
     elevation: 2,
     justifyContent: 'flex-start',
     alignItems: "center",
+    paddingVertical: 20,
   },
   blankPlanModalHeading: {
     fontFamily: "Poppins-Regular",
     fontSize: 24,
-    fontWeight: "500",
     marginBottom: 15,
     textAlign: "center",
   },
@@ -366,11 +469,103 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   closeBlankPlanModalButton: {
-    marginTop:20,
+    marginTop: 20,
     paddingVertical: 10,
+    paddingHorizontal: 40,
+    backgroundColor: "#242528",
+    borderWidth: 1,
+    borderRadius: 20,
+  },
+  exerciseInputModalContent: {
+    width: "90%",
     paddingHorizontal: 20,
+    backgroundColor: "white",
+    borderRadius: 16,
+    elevation: 2,
+    justifyContent: 'flex-start',
+    alignItems: "flex-start",
+    paddingVertical: 15,
+  },
+  exerciseInputModalHeading: {
+    fontFamily: "Poppins-Regular",
+    fontSize: 18,
+    lineHeight: 24,
+    marginVertical: 15,
+    textAlign: "center",
+    alignSelf: 'flex-start',
+    color: '#333',
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap:10,
+    marginVertical:2,
+    width: '95%',
+    justifyContent: 'flex-start',
+  },
+  weightInput: {
+    width: 48,
+    height: 30,
+    borderColor: "#DBDBDB",
+    borderWidth: 2,
+    borderRadius: 12,
+    borderStyle:'dotted',
+    textAlign:'center',
+    justifyContent:'center',
+    fontFamily: "Poppins-Light",
+    fontSize: 13,
+    backgroundColor:'white',
+    padding: 0,
+  },
+  repsInput: {
+    width: 48,
+    height: 30,
+    borderColor: "#DBDBDB",
+    borderWidth: 2,
+    borderRadius: 12,
+    borderStyle:'dotted',
+    textAlign:'center',
+    justifyContent:'center',
+    fontFamily: "Poppins-Light",
+    fontSize: 13,
+    backgroundColor:'white',
+    padding: 0,
+  },
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    marginTop: 17,
+    width: '95%',
+    justifyContent: 'space-between',
+  },
+  addSetButton: {
     backgroundColor: "#E0E0E0",
-    borderRadius: 8,
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#DBDBDB',
+  },
+  addSetButtonText: {
+    fontSize: 20,
+    color: "#333",
+    lineHeight: 20,
+  },
+  saveButton: {
+    backgroundColor: "#242528",
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#242528',
+  },
+  saveButtonText: {
+    fontSize: 20,
+    color: "white",
+    lineHeight: 20,
   },
 });
 

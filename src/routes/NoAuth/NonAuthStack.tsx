@@ -7,6 +7,8 @@ import AppHome from "../../screens/nonAuth/AppHome";
 import Tabs from "../../navigation/Tab";
 import AppRoutes from "../RouteKeys/appRoutes";
 import GymDeck from "../../screens/nonAuth/GymDeck";
+import MainHome from "../../screens/nonAuth/MainHome";
+import MainTab from "../../navigation/MainTab";
 
 export default function NonAuthStack() {
   const Stack = createNativeStackNavigator();
@@ -16,7 +18,9 @@ export default function NonAuthStack() {
       <Stack.Screen name={AppRoutes.Avatar} component={Avatar} />
       <Stack.Screen name={AppRoutes.WelcomeApp} component={WelcomeApp} />
       <Stack.Screen name={AppRoutes.GymDeck} component={GymDeck} />
+        <Stack.Screen name={AppRoutes.MainTab} component={MainTab}/>
       <Stack.Screen name={AppRoutes.Tabs} component={Tabs} />
+
 
     </Stack.Navigator>
   );

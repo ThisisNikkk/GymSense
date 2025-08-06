@@ -1,4 +1,3 @@
-import GymDeck from "../../screens/nonAuth/GymDeck"
 
 const AppRoutes = {
     AuthStack:"AuthStack",
@@ -10,9 +9,10 @@ const AppRoutes = {
     Home:"Home",
     Avatar:"Avatar",
     WelcomeApp:"WelcomeApp",
-    AppHome:"AppHome",
+    MainTab:"MainTab",
     Tabs:"Tabs",
-    GymDeck:"GymDeck"
+    GymDeck:"GymDeck",
+    
 }
 
 export default AppRoutes

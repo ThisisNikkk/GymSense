@@ -9,6 +9,7 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const img1 = require('../../assets/icons/1.png');
 const img2 = require('../../assets/icons/2.png');
@@ -176,18 +177,20 @@ const GymDeck: FC<GymDeckProps> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {renderHeaderAndFilters()}
-      <FlatList
-        data={exercises}
-        renderItem={renderExerciseCard}
-        keyExtractor={item => item.id}
-        numColumns={2}
-        contentContainerStyle={styles.listContainer}
-        columnWrapperStyle={styles.row}
-      />
-      {renderPagination()}
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        {renderHeaderAndFilters()}
+        <FlatList
+          data={exercises}
+          renderItem={renderExerciseCard}
+          keyExtractor={item => item.id}
+          numColumns={2}
+          contentContainerStyle={styles.listContainer}
+          columnWrapperStyle={styles.row}
+        />
+        {renderPagination()}
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
